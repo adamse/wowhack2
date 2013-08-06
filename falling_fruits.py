@@ -2,6 +2,8 @@
 import sys, os, pygame, random
 from pygame.locals import *
 
+
+image_dir = "bilder"
 # The size of the screen
 size = width, height = 660, 700
 # The screen is global, so the Fruit-class can get access to it
@@ -13,10 +15,11 @@ apple_x = 330
 banana_x = 550
 
 class Fruit:
-    def __init__(self, image_name, speed = 0.5):
-        self.name = image_name
+    def __init__(self, fruit, speed=0.5):
         # Load the image
-        self.image = pygame.image.load(os.path.join('bilder', image_name + ".png")).convert()
+        self.image = pygame.image.load(os.path.join('bilder', fruit + ".png")).convert()
+
+        self.fruit = fruit
 
         # Set white to the transparent color
         self.image.set_colorkey((120, 120, 0))
@@ -26,13 +29,12 @@ class Fruit:
 
         self.rect = self.image.get_rect()
 
-        # This is a bit ugly, but...
         # Determine the x coordinate of the fruit according to which fruit it is
-        if image_name == "lemon":
+        if fruit == "lemon":
             self.x = lemon_x
-        elif image_name == "banana":
+        elif fruit == "banana":
             self.x = banana_x
-        elif image_name == "apple":
+        elif fruit == "apple":
             self.x = apple_x
 
         # Make the fruit appear outside the screen at the top
@@ -93,12 +95,16 @@ def main():
 
     fruit_contours = FruitContours()
 
-    fruits_on_screen = []
+    fruits = {
+      "lemon": [],
+      "apple": [],
+      "banana": []
+    }
 
     pygame.init()
 
     # A dictionary for which buttons that will generate what fruit
-    fruitdir = {K_UP: "banana", K_LEFT: "lemon", K_RIGHT: "apple"}
+    fruitdir = {K_UP: "apple", K_LEFT: "lemon", K_RIGHT: "banana"}
 
     while 1:
         screen.fill(black)
@@ -109,38 +115,28 @@ def main():
             if event.type == QUIT: return
             elif event.type == KEYDOWN:
                 button = event.key
-                if button == K_ESCAPE: return			
+                if button == K_ESCAPE: return
                 elif button in (K_UP,K_LEFT,K_RIGHT):
-                    name = pygame.key.name(button)                    
-                    for f in fruits_on_screen:
-                        if f.name == fruitdir[button]: 
-                            if (f.rect.bottom > (height - 150)):
-                                print 'Well done, you saved the ' + f.name + '!'
-                                fruits_on_screen.remove(f)
-                                break
-                            else:
-                            	print 'Fruit ' + name + ' not in range yet!'				
-                else:
-					print 'You fail!'
-        for f in fruits_on_screen :
-            f.move(delta)
-            f.blit()				                
-            if f.rect.top > height:
-                fruits_on_screen.remove(f)
-                print 'An unfortunate ' + f.name + ' fell through the ground and vanished!'
+                  for l in (fruits["lemon"], fruits["banana"], fruits["apple"]):
+                    for f in l:
+                      if f.fruit == fruitdir[button] and f.rect.bottom > (height - 150):
+                        print 'Well done, you saved the ' + f.fruit + '!'
+                        break
 
         # Move and blit all the fruits on the screen
-        for index, fruit in enumerate(fruits_on_screen):
-          if fruit.move(delta):
-            fruit.blit()
-          else:
-            fruits_on_screen.pop(index)
+        for l in (fruits["lemon"], fruits["banana"], fruits["apple"]):
+          for index, fruit in enumerate(l):
+            if fruit.move(delta):
+              fruit.blit()
+            else:
+              fruits[fruit.fruit].pop(index)
 
-        # Randomly generate fruits (TODO: för att testa om det funkar)
-        at_100_generate_fruit = random.randint(0, 100)
-        if at_100_generate_fruit == 100:
+        # Generate random fruits
+        if random.randint(0, 100) > 97:
             new_fruit = generateRandomFruit()
-            fruits_on_screen.append(new_fruit)
+
+            fruits[new_fruit.fruit].append(new_fruit)
+
 
         # Draw the fruit contours
         fruit_contours.blit()
