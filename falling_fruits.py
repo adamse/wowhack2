@@ -111,6 +111,9 @@ def main():
             elif event.type == KEYDOWN:
                 button = event.key
                 ## Check if the player pressed a button
+                if button == K_q:
+                  return
+
                 if button in (K_UP,K_LEFT,K_RIGHT):
                     ## if so: Create a new fruit
                     new_fruit = Fruit(fruitdir[button], default_speed)
