@@ -91,6 +91,8 @@ def generateRandomFruit():
 def main():
     black = 0, 0, 0
 
+    SCORE = 0
+
     clock = pygame.time.Clock()
 
     fruit_contours = FruitContours()
@@ -121,6 +123,8 @@ def main():
                     for f in l:
                       if f.fruit == fruitdir[button] and f.rect.bottom > (height - 150):
                         print 'Well done, you saved the ' + f.fruit + '!'
+                        SCORE += 1
+                        print SCORE
                         break
 
         # Move and blit all the fruits on the screen
