@@ -1,3 +1,5 @@
+# vim: set fileencoding=utf8
+
 import sys, os, pygame
 from pygame.locals import *
 
@@ -9,14 +11,29 @@ screen = pygame.display.set_mode(size)
 class Fruit:
     def __init__(self, image_name, speed):
         ## Load the image and get the rect from the image
-        self.image = pygame.image.load(os.path.join('bilder', image_name + ".png"))
+        self.image = pygame.image.load(os.path.join('bilder', image_name + ".png")).convert()
         self.rect = self.image.get_rect()
 
-        ## Resize the rect (TODO: verkade inte fungera)
-        self.rect = self.rect.inflate(-4, -4)
+        ## Set white to the transparent color
+        self.image.set_colorkey((255, 255, 255))
+
+        ## Resize the image
+        self.image = pygame.transform.scale(self.image, (128, 128))
+#        self.rect = self.rect.inflate(-20, -20) ## this doesn't work now and I'm not sure why
+
+        ## This is a bit ugly, but...
+        ## Determine the x coordinate of the fruit according to which fruit it is
+        ## TODO: Jag fattar inte dessa siffror (de verkar inte vara koordinater? 
+        ##       fast de borde bero på recten och jag tror inte jag lyckas resizea den)
+        if image_name == "lemon":
+            self.x = 256
+        elif image_name == "banana":
+            self.x = 460
+        if image_name == "apple":
+            self.x = 660 
 
         ## Make the fruit appear outside the screen at the top
-        self.rect.midtop = (320, -100)
+        self.rect.midtop = (self.x, -100)
         
         ## The speed of which the fruit will fall
         self.speed = speed
@@ -25,15 +42,18 @@ class Fruit:
     def blit(self):
         screen.blit(self.image, self.rect)
 
-    ## Moves the fruit according to the set speed
-    def move(self):
-        self.rect = self.rect.move((0, self.speed))
+    ## Moves the fruit according to the set speed and the time delta 
+    ## (this is so the fruit moves to actual tim passed, which could differ for every iteration of the game loop)
+    def move(self, delta):
+        self.rect = self.rect.move((0, self.speed * delta))
 
 def main():
     black = 0, 0, 0
-	
+
+    clock = pygame.time.Clock()
+
     ## The default speed for the generated fruits
-    default_speed = 3
+    default_speed = 0.5
 
     fruits_on_screen = []
 
@@ -44,6 +64,8 @@ def main():
 
     while 1:
         screen.fill(black)
+
+        delta = clock.tick()
 
         for event in pygame.event.get():
             if event.type == QUIT: return
@@ -57,7 +79,7 @@ def main():
 
         ## Move and blit all the fruits on the screen
         for fruit in fruits_on_screen:
-            fruit.move()
+            fruit.move(delta)
             fruit.blit()
 
         pygame.display.flip()
