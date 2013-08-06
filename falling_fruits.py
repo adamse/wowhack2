@@ -6,15 +6,15 @@ from pygame.locals import *
 size = width, height = 660, 700
 # The screen is global, so the Fruit-class can get access to it
 screen = pygame.display.set_mode(size)
-# The default speed for the generated fruits
-default_speed = 0.5
+
 # The x coordinates for the different fruits
 lemon_x = 110
 apple_x = 330
 banana_x = 550
 
 class Fruit:
-    def __init__(self, image_name, speed):
+    def __init__(self, image_name, speed = 0.5):
+        self.name = image_name
         # Load the image
         self.image = pygame.image.load(os.path.join('bilder', image_name + ".png")).convert()
 
@@ -83,7 +83,7 @@ def generateRandomFruit():
     fruits = ["banana", "apple", "lemon"]
     index = random.randint(0, 2)
     fruit_type = fruits[index]
-    fruit = Fruit(fruit_type, default_speed)
+    fruit = Fruit(fruit_type)
     return fruit
 
 def main():
@@ -109,16 +109,25 @@ def main():
             if event.type == QUIT: return
             elif event.type == KEYDOWN:
                 button = event.key
-
-                # Let the user quit the fucking game
-                if button == K_q:
-                  return
-
-                # Check if the player pressed a button
-                if button in (K_UP,K_LEFT,K_RIGHT):
-                    # if so: Create a new fruit
-                    new_fruit = Fruit(fruitdir[button], default_speed)
-                    fruits_on_screen.append(new_fruit)
+                if button == K_ESCAPE: return			
+                elif button in (K_UP,K_LEFT,K_RIGHT):
+                    name = pygame.key.name(button)                    
+                    for f in fruits_on_screen:
+                        if f.name == fruitdir[button]: 
+                            if (f.rect.bottom > (height - 150)):
+                                print 'Well done, you saved the ' + f.name + '!'
+                                fruits_on_screen.remove(f)
+                                break
+                            else:
+                            	print 'Fruit ' + name + ' not in range yet!'				
+                else:
+					print 'You fail!'
+        for f in fruits_on_screen :
+            f.move(delta)
+            f.blit()				                
+            if f.rect.top > height:
+                fruits_on_screen.remove(f)
+                print 'An unfortunate ' + f.name + ' fell through the ground and vanished!'
 
         # Move and blit all the fruits on the screen
         for index, fruit in enumerate(fruits_on_screen):
