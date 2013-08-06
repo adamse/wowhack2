@@ -4,15 +4,15 @@ import sys, os, pygame, random
 from pygame.locals import *
 
 ## The size of the screen
-size = width, height = 640, 700
+size = width, height = 660, 700
 ## The screen is global, so the Fruit-class can get access to it
 screen = pygame.display.set_mode(size)
 ## The default speed for the generated fruits
 default_speed = 0.5
 ## The x coordinates for the different fruits
-lemon_x = 85
-banana_x = 299
-apple_x = 512
+lemon_x = 110
+apple_x = 330
+banana_x = 550
 
 class Fruit:
     def __init__(self, image_name, speed):
@@ -78,7 +78,7 @@ class FruitContours:
         screen.blit(self.banana_image, self.banana_rect)
         screen.blit(self.apple_image, self.apple_rect)
         screen.blit(self.lemon_image, self.lemon_rect)
-        
+
 
 def generateRandomFruit():
     fruits = ["banana", "apple", "lemon"]
@@ -89,7 +89,7 @@ def generateRandomFruit():
 
 def main():
     black = 0, 0, 0
-    
+
     clock = pygame.time.Clock()
 
     fruit_contours = FruitContours()
