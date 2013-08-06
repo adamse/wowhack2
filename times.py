@@ -32,7 +32,7 @@ def main():
         # will crash yeah
         if (song_time >= beats[0]):
             beats.pop(0)
-            print("Dance to the section! " + str(beats[0]))
+            print("Dance to the beat! " + str(beats[0]))
 
 if __name__ == '__main__' : main()
 
