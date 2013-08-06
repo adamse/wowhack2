@@ -14,7 +14,7 @@ class Fruit:
         self.image = pygame.image.load(os.path.join('bilder', image_name + ".png")).convert()
 
         ## Set white to the transparent color
-        self.image.set_colorkey((255, 255, 255))
+        self.image.set_colorkey((0, 0, 0))
 
         ## Resize the image
         self.image = pygame.transform.scale(self.image, (128, 128))
@@ -44,9 +44,12 @@ class Fruit:
         screen.blit(self.image, self.rect)
 
     ## Moves the fruit according to the set speed and the time delta
-    ## (this is so the fruit moves to actual tim passed, which could differ for every iteration of the game loop)
+    ## (this is so the fruit moves to actual time passed, which could differ for every iteration of the game loop)
+    ## returns True if were still on screen
     def move(self, delta):
         self.rect = self.rect.move((0, self.speed * delta))
+        return (self.rect.y <= height)
+
 
 def main():
     black = 0, 0, 0
@@ -66,7 +69,7 @@ def main():
     while 1:
         screen.fill(black)
 
-        delta = clock.tick()
+        delta = clock.tick(30)
 
         for event in pygame.event.get():
             if event.type == QUIT: return
@@ -79,9 +82,11 @@ def main():
                     fruits_on_screen.append(new_fruit)
 
         ## Move and blit all the fruits on the screen
-        for fruit in fruits_on_screen:
-            fruit.move(delta)
+        for index, fruit in enumerate(fruits_on_screen):
+          if fruit.move(delta):
             fruit.blit()
+          else:
+            fruits_on_screen.pop(index)
 
         pygame.display.flip()
 
