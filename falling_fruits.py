@@ -12,7 +12,6 @@ class Fruit:
     def __init__(self, image_name, speed):
         ## Load the image and get the rect from the image
         self.image = pygame.image.load(os.path.join('bilder', image_name + ".png")).convert()
-        self.rect = self.image.get_rect()
 
         ## Set white to the transparent color
         self.image.set_colorkey((255, 255, 255))
@@ -21,20 +20,22 @@ class Fruit:
         self.image = pygame.transform.scale(self.image, (128, 128))
 #        self.rect = self.rect.inflate(-20, -20) ## this doesn't work now and I'm not sure why
 
+        self.rect = self.image.get_rect()
+
         ## This is a bit ugly, but...
         ## Determine the x coordinate of the fruit according to which fruit it is
-        ## TODO: Jag fattar inte dessa siffror (de verkar inte vara koordinater? 
+        ## TODO: Jag fattar inte dessa siffror (de verkar inte vara koordinater?
         ##       fast de borde bero på recten och jag tror inte jag lyckas resizea den)
         if image_name == "lemon":
-            self.x = 256
+            self.x = 85
         elif image_name == "banana":
-            self.x = 460
+            self.x = 299
         if image_name == "apple":
-            self.x = 660 
+            self.x = 512
 
         ## Make the fruit appear outside the screen at the top
         self.rect.midtop = (self.x, -100)
-        
+
         ## The speed of which the fruit will fall
         self.speed = speed
 
@@ -42,7 +43,7 @@ class Fruit:
     def blit(self):
         screen.blit(self.image, self.rect)
 
-    ## Moves the fruit according to the set speed and the time delta 
+    ## Moves the fruit according to the set speed and the time delta
     ## (this is so the fruit moves to actual tim passed, which could differ for every iteration of the game loop)
     def move(self, delta):
         self.rect = self.rect.move((0, self.speed * delta))
@@ -60,7 +61,7 @@ def main():
     pygame.init()
 
     ## A dictionary for which buttons that will generate what fruit
-    fruitdir = {K_UP: "banana", K_LEFT: "lemon", K_RIGHT: "apple"}
+    fruitdir = {K_UP: "apple", K_LEFT: "lemon", K_RIGHT: "banana"}
 
     while 1:
         screen.fill(black)
@@ -71,7 +72,7 @@ def main():
             if event.type == QUIT: return
             elif event.type == KEYDOWN:
                 button = event.key
-                ## Check if the player pressed a button 
+                ## Check if the player pressed a button
                 if button in (K_UP,K_LEFT,K_RIGHT):
                     ## if so: Create a new fruit
                     new_fruit = Fruit(fruitdir[button], default_speed)
