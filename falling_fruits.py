@@ -9,6 +9,10 @@ size = width, height = 640, 700
 screen = pygame.display.set_mode(size)
 ## The default speed for the generated fruits
 default_speed = 0.5
+## The x coordinates for the different fruits
+lemon_x = 85
+banana_x = 299
+apple_x = 512
 
 class Fruit:
     def __init__(self, image_name, speed):
@@ -26,11 +30,11 @@ class Fruit:
         ## This is a bit ugly, but...
         ## Determine the x coordinate of the fruit according to which fruit it is
         if image_name == "lemon":
-            self.x = 85
+            self.x = lemon_x
         elif image_name == "banana":
-            self.x = 299
+            self.x = banana_x
         elif image_name == "apple":
-            self.x = 512
+            self.x = apple_x
 
         ## Make the fruit appear outside the screen at the top
         self.rect.midtop = (self.x, -100)
@@ -49,6 +53,33 @@ class Fruit:
         self.rect = self.rect.move((0, self.speed * delta))
         return (self.rect.y <= height)
 
+class FruitContours:
+
+    def __init__(self):
+        self.banana_image, self.banana_rect = self.createFruitContour("banana", banana_x)
+        self.apple_image, self.apple_rect = self.createFruitContour("apple", apple_x)
+        self.lemon_image, self.lemon_rect = self.createFruitContour("lemon", lemon_x)
+
+    def createFruitContour(self, fruit_name, x):
+        image = pygame.image.load(os.path.join('bilder', fruit_name + "_linjer.png")).convert()
+        image = pygame.transform.scale(image, (128, 128))
+
+        image.set_colorkey((120, 120, 0))
+
+        rect = image.get_rect()
+
+        rect.midtop = (x, height - 144)
+
+        screen.blit(image, rect)
+
+        return (image, rect)
+
+    def blit(self):
+        screen.blit(self.banana_image, self.banana_rect)
+        screen.blit(self.apple_image, self.apple_rect)
+        screen.blit(self.lemon_image, self.lemon_rect)
+        
+
 def generateRandomFruit():
     fruits = ["banana", "apple", "lemon"]
     index = random.randint(0, 2)
@@ -58,8 +89,10 @@ def generateRandomFruit():
 
 def main():
     black = 0, 0, 0
-
+    
     clock = pygame.time.Clock()
+
+    fruit_contours = FruitContours()
 
     fruits_on_screen = []
 
@@ -95,6 +128,9 @@ def main():
         if at_100_generate_fruit == 100:
             new_fruit = generateRandomFruit()
             fruits_on_screen.append(new_fruit)
+
+        ## Draw the fruit contours
+        fruit_contours.blit()
 
         pygame.display.flip()
 
