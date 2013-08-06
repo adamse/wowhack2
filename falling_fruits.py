@@ -117,14 +117,15 @@ def main():
             if event.type == QUIT: return
             elif event.type == KEYDOWN:
                 button = event.key
-                if button == K_ESCAPE: return
+                if button == K_ESCAPE:
+                  print "You win:", SCORE, "points!", "HIGHSCORE!"
+                  return
                 elif button in (K_UP,K_LEFT,K_RIGHT):
                   for l in (fruits["lemon"], fruits["banana"], fruits["apple"]):
                     for f in l:
                       if f.fruit == fruitdir[button] and f.rect.bottom > (height - 150):
-                        print 'Well done, you saved the ' + f.fruit + '!'
                         SCORE += 1
-                        print SCORE
+                        pygame.display.set_caption("Score: " + str(SCORE))
                         break
 
         # Move and blit all the fruits on the screen
@@ -141,10 +142,10 @@ def main():
 
             fruits[new_fruit.fruit].append(new_fruit)
 
-
         # Draw the fruit contours
         fruit_contours.blit()
 
         pygame.display.flip()
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+  main()
