@@ -26,8 +26,8 @@ def main():
 
     song_time = 0
 
-    while 1:
-        song_time += (clock.tick() / float(1000))
+    while len(beats) > 0:
+        song_time += (clock.tick(30) / float(1000))
 
         # will crash yeah
         if (song_time >= beats[0]):
@@ -35,5 +35,3 @@ def main():
             print("Dance to the beat! " + str(beats[0]))
 
 if __name__ == '__main__' : main()
-
-
