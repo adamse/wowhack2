@@ -32,7 +32,6 @@ class Background:
   def blit(self):
     self.move()
     for offset in (0, self.width, 2*self.width):
-      print self.oney
       self.screen.blit(self.one, (0, self.oney + offset))
       self.screen.blit(self.two, (0, self.twoy + offset))
       self.screen.blit(self.three, (0, self.threey + offset))
