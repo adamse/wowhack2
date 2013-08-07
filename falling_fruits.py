@@ -1,6 +1,7 @@
 # vim: set fileencoding=utf8
 import sys, os, pygame, random
 from pygame.locals import *
+from background import Background
 
 
 image_dir = "bilder"
@@ -114,26 +115,6 @@ class FruitContours:
     elif fruit == "apple":
       self.glow_apple()
 
-class Background:
-  def __init__(self):
-    self.one, self.onerect = self.fo("space1")
-    self.two, self.tworect = self.fo("space2")
-    self.three, self.threerect = self.fo("space3")
-
-  def fo(self, image):
-    im = pygame.image.load(os.path.join(image_dir, image + ".png")).convert()
-    im = python.transform.scale(im, (width, width))
-    im.set_colorkey((0,0,0))
-    return (im, im.get_rect())
-
-  def move(self):
-    return
-
-  def blit(self):
-    screenblit(one, onerect)
-    screenblit(two, tworect)
-    screenblit(three, threerect)
-
 def generateRandomFruit():
   return Fruit(random.choice(["banana", "apple", "lemon"]))
 
@@ -146,9 +127,8 @@ def main():
   SCORE = 0
 
   clock = pygame.time.Clock()
-
   fruit_contours = FruitContours()
-
+  back = Background(screen, width, height)
   fruits = []
 
   pygame.init()
@@ -179,6 +159,8 @@ def main():
               break
             # Lose points if you're cheating
             SCORE -= 1
+
+    back.blit()
 
     # Move and blit all the fruits on the screen
     for index, fruit in enumerate(fruits):
