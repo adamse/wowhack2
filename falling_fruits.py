@@ -66,13 +66,13 @@ class FruitContours:
     self.lglow = False
 
   def createFruitContour(self, fruit_name, x):
-    image = pygame.image.load(os.path.join('bilder', fruit_name + "_linjer.png"))#.convert()
-    glow = pygame.image.load(os.path.join("bilder", fruit_name + "_linjer_glow.png"))#.convert()
+    image = pygame.image.load(os.path.join('bilder', fruit_name + "_linjer.png")).convert()
+    glow = pygame.image.load(os.path.join("bilder", fruit_name + "_linjer_glow.png")).convert()
     image = pygame.transform.scale(image, (128, 128))
     glow = pygame.transform.scale(glow, (128, 128))
 
-    #image.set_colorkey((120, 120, 0))
-    #glow.set_colorkey((120, 120, 0))
+    image.set_colorkey((120, 120, 0))
+    glow.set_colorkey((120, 120, 0))
 
     rect = image.get_rect()
 
