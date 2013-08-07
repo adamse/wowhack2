@@ -43,6 +43,9 @@ class Fruit:
         # The speed of which the fruit will fall
         self.speed = speed
 
+        # Is the fruit hit?
+        self.hit = False
+
     # Blits the fruit to the screen
     def blit(self):
         screen.blit(self.image, self.rect)
@@ -118,62 +121,62 @@ def generateRandomFruit():
   return fruit
 
 def main():
- black = 0, 0, 0
+  black = 0, 0, 0
 
- SCORE = 0
+  SCORE = 0
 
- clock = pygame.time.Clock()
+  clock = pygame.time.Clock()
 
- fruit_contours = FruitContours()
+  fruit_contours = FruitContours()
 
- fruits = []
+  fruits = []
 
- pygame.init()
+  pygame.init()
 
- # A dictionary for which buttons that will generate what fruit
- fruitdir = {K_UP: "apple", K_LEFT: "lemon", K_RIGHT: "banana"}
+  # A dictionary for which buttons that will generate what fruit
+  fruitdir = {K_UP: "apple", K_LEFT: "lemon", K_RIGHT: "banana"}
 
- while 1:
-   screen.fill(black)
+  while 1:
+    screen.fill(black)
 
-   fruit_contours.unglow();
+    fruit_contours.unglow();
 
-   delta = clock.tick(30)
+    delta = clock.tick(30)
 
-   for event in pygame.event.get():
-     if event.type == QUIT: return
-     elif event.type == KEYDOWN:
-       button = event.key
-       if button == K_ESCAPE:
-         print "You win:", SCORE, "points!", "HIGHSCORE!"
-         return
-       elif button in (K_UP,K_LEFT,K_RIGHT):
-         for f in fruits:
-           if f.fruit == fruitdir[button] and f.rect.bottom > (height - 150):
-             SCORE += 1
-             fruit_contours.glow(f.fruit)
-             break
-           else:
-            SCORE -= 1
+    for event in pygame.event.get():
+      if event.type == QUIT: return
+      elif event.type == KEYDOWN:
+        button = event.key
+        if button == K_ESCAPE:
+          print "You win:", SCORE, "points!", "HIGHSCORE!"
+          return
+        elif button in (K_UP,K_LEFT,K_RIGHT):
+          for f in fruits:
+            if f.fruit == fruitdir[button] and f.rect.bottom > (height - 150):
+              SCORE += 1
+              fruit_contours.glow(f.fruit)
+              f.hit = True
+              break
 
-   # Move and blit all the fruits on the screen
-   for index, fruit in enumerate(fruits):
-     if fruit.move(delta):
-       fruit.blit()
-     else:
-       fruits.pop(index)
+    # Move and blit all the fruits on the screen
+    for index, fruit in enumerate(fruits):
+      if fruit.move(delta):
+        fruit.blit()
+      else:
+        if not fruit.hit: SCORE -= 1
+        fruits.pop(index)
 
-   # Generate random fruits
-   if random.randint(0, 100) > 97:
-     new_fruit = generateRandomFruit()
+    # Generate random fruits
+    if random.randint(0, 100) > 97:
+      new_fruit = generateRandomFruit()
 
-     fruits.append(new_fruit)
+      fruits.append(new_fruit)
 
-   # Draw the fruit contours
-   fruit_contours.blit()
+    # Draw the fruit contours
+    fruit_contours.blit()
 
-   pygame.display.flip()
-   pygame.display.set_caption("Score: " + str(SCORE))
+    pygame.display.flip()
+    pygame.display.set_caption("Score: " + str(SCORE))
 
 if __name__ == '__main__':
   main()
