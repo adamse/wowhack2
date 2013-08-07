@@ -140,8 +140,13 @@ def main():
 
   pygame.init()
 
+
   # A dictionary for which buttons that will generate what fruit
   fruitdir = {K_UP: "apple", K_LEFT: "lemon", K_RIGHT: "banana"}
+
+  # PLay that music you!
+  pygame.mixer.init()
+  pygame.mixer.Sound("harder.ogg").play()
 
   while 1:
     screen.fill(black)

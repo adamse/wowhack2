@@ -19,13 +19,13 @@ class Background:
     return im
 
   def move(self):
-    self.oney -= 10
+    self.oney -= 5
     if self.oney < -self.width:
       self.oney = 0
-    self.twoy -= 20
+    self.twoy -= 7
     if self.twoy < -self.width:
       self.twoy = 0
-    self.threey -= 15
+    self.threey -= 10
     if self.threey < -self.width:
       self.threey = 0
 
