@@ -132,13 +132,25 @@ def main():
   SCORE = 0
 
   clock = pygame.time.Clock()
+  pygame.init()
+
+  start = pygame.image.load("start.png").convert()
+  start = pygame.transform.scale(start, (width, width))
+  screen.blit(start, (0, 0))
+  pygame.display.flip()
+
+  n = True
+  while n:
+    for event in pygame.event.get():
+      if event.type == KEYDOWN:
+        n = False
+        break
+
   fruit_contours = FruitContours()
   back = Background(screen, width, height)
   fruits = []
 
   beat_timer = times.BeatTimer(fruit_falling_speed, fruit_falling_distance)
-
-  pygame.init()
 
 
   # A dictionary for which buttons that will generate what fruit
