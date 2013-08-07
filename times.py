@@ -1,5 +1,8 @@
 import simplejson, pygame
 
+falling_distance = 400 # this is just a guess: we'll have to check the actual falling distance for fruits in pixels
+default_speed = 0.4
+
 class Times:
   def __init__(self, json="daft_punk.json"):
     with open(json) as f:
@@ -26,12 +29,41 @@ def main():
 
     song_time = 0
 
-    while len(beats) > 0:
-        song_time += (clock.tick(30) / float(1000))
+    last_beat_time = 0
+    extra_beat_time = 1000
+    extra_beat = False
 
-        # will crash yeah
-        if (song_time >= beats[0]):
-            beats.pop(0)
-            print("Dance to the beat! " + str(beats[0]))
+    falling_time = falling_distance / (default_speed * 1000)
+
+    while 1:
+        song_time += (clock.tick() / float(1000))
+
+        # Check if the song is finished
+        if len(beats) > 0:
+            # If there's an extra beat, do something before it
+            if (extra_beat and song_time + falling_time >= extra_beat_time):
+                print("Extra beat!")
+                print("Time now + falling time: " + str(song_time + falling_time))
+                print("Extra beat time: " + str(extra_beat_time))
+                print("")
+
+                extra_beat = False
+
+            # If not, do something before every beat
+            if (song_time + falling_time >= beats[0]):
+                time_between_beats = beats[0] - last_beat_time
+                extra_beat_time = beats[0] + (time_between_beats / 2)
+                
+                print("Dance before the beat!")
+                print("Time now + falling time: " + str(song_time + falling_time))
+                print("Beat time: " + str(beats[0]))
+                print("")
+
+                extra_beat = not extra_beat
+
+                last_beat_time = beats[0]
+                beats.pop(0)
 
 if __name__ == '__main__' : main()
+
+
