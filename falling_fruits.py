@@ -14,6 +14,9 @@ lemon_x = 110
 apple_x = 330
 banana_x = 550
 
+# Magic glow time
+magic_glow_time = 10
+
 class Fruit:
     def __init__(self, fruit, speed=0.5):
         # Load the image
@@ -64,9 +67,9 @@ class FruitContours:
     self.apple, self.apple_glow, self.apple_rect = self.createFruitContour("apple", apple_x)
     self.lemon, self.lemon_glow, self.lemon_rect = self.createFruitContour("lemon", lemon_x)
 
-    self.bglow = False
-    self.aglow = False
-    self.lglow = False
+    self.bglow = 0
+    self.aglow = 0
+    self.lglow = 0
 
   def createFruitContour(self, fruit_name, x):
     image = pygame.image.load(os.path.join('bilder', fruit_name + "_linjer.png")).convert()
@@ -86,23 +89,23 @@ class FruitContours:
     return (image, glow, rect)
 
   def blit(self):
-    screen.blit(self.banana if not self.bglow else self.banana_glow, self.banana_rect)
-    screen.blit(self.apple if not self.aglow else self.apple_glow, self.apple_rect)
-    screen.blit(self.lemon if not self.lglow else self.lemon_glow, self.lemon_rect)
+    screen.blit(self.banana if self.bglow < 1 else self.banana_glow, self.banana_rect)
+    screen.blit(self.apple if self.aglow < 1 else self.apple_glow, self.apple_rect)
+    screen.blit(self.lemon if self.lglow < 1 else self.lemon_glow, self.lemon_rect)
 
   def glow_banana(self):
-    self.bglow = True
+    self.bglow = magic_glow_time
 
   def glow_apple(self):
-    self.aglow = True
+    self.aglow = magic_glow_time
 
   def glow_lemon(self):
-    self.lglow = True
+    self.lglow = magic_glow_time
 
   def unglow(self):
-    self.bglow = False
-    self.aglow = False
-    self.lglow = False
+      self.bglow -= 1
+      self.lglow -= 1
+      self.aglow -= 1
 
   def glow(self, fruit):
     if fruit == "banana":
@@ -119,6 +122,9 @@ def generateRandomFruit():
   fruit_type = fruits[index]
   fruit = Fruit(fruit_type)
   return fruit
+
+def shouldGenerateFruit():
+  return random.randint(1,100) > 97
 
 def main():
   black = 0, 0, 0
@@ -139,7 +145,7 @@ def main():
   while 1:
     screen.fill(black)
 
-    fruit_contours.unglow();
+    fruit_contours.unglow()
 
     delta = clock.tick(30)
 
@@ -167,7 +173,7 @@ def main():
         fruits.pop(index)
 
     # Generate random fruits
-    if random.randint(0, 100) > 97:
+    if shouldGenerateFruit():
       new_fruit = generateRandomFruit()
 
       fruits.append(new_fruit)
@@ -178,5 +184,4 @@ def main():
     pygame.display.flip()
     pygame.display.set_caption("Score: " + str(SCORE))
 
-if __name__ == '__main__':
-  main()
+if __name__ == '__main__': main()
