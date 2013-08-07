@@ -56,96 +56,124 @@ class Fruit:
 
 class FruitContours:
 
-    def __init__(self):
-        self.banana_image, self.banana_rect = self.createFruitContour("banana", banana_x)
-        self.apple_image, self.apple_rect = self.createFruitContour("apple", apple_x)
-        self.lemon_image, self.lemon_rect = self.createFruitContour("lemon", lemon_x)
+  def __init__(self):
+    self.banana, self.banana_glow, self.banana_rect = self.createFruitContour("banana", banana_x)
+    self.apple, self.apple_glow, self.apple_rect = self.createFruitContour("apple", apple_x)
+    self.lemon, self.lemon_glow, self.lemon_rect = self.createFruitContour("lemon", lemon_x)
 
-    def createFruitContour(self, fruit_name, x):
-        image = pygame.image.load(os.path.join('bilder', fruit_name + "_linjer.png")).convert()
-        image = pygame.transform.scale(image, (128, 128))
+    self.bglow = False
+    self.aglow = False
+    self.lglow = False
 
-        image.set_colorkey((120, 120, 0))
+  def createFruitContour(self, fruit_name, x):
+    image = pygame.image.load(os.path.join('bilder', fruit_name + "_linjer.png"))#.convert()
+    glow = pygame.image.load(os.path.join("bilder", fruit_name + "_linjer_glow.png"))#.convert()
+    image = pygame.transform.scale(image, (128, 128))
+    glow = pygame.transform.scale(glow, (128, 128))
 
-        rect = image.get_rect()
+    #image.set_colorkey((120, 120, 0))
+    #glow.set_colorkey((120, 120, 0))
 
-        rect.midtop = (x, height - 144)
+    rect = image.get_rect()
 
-        screen.blit(image, rect)
+    rect.midtop = (x, height - 144)
 
-        return (image, rect)
+    screen.blit(image, rect)
 
-    def blit(self):
-        screen.blit(self.banana_image, self.banana_rect)
-        screen.blit(self.apple_image, self.apple_rect)
-        screen.blit(self.lemon_image, self.lemon_rect)
+    return (image, glow, rect)
+
+  def blit(self):
+    screen.blit(self.banana if not self.bglow else self.banana_glow, self.banana_rect)
+    screen.blit(self.apple if not self.aglow else self.apple_glow, self.apple_rect)
+    screen.blit(self.lemon if not self.lglow else self.lemon_glow, self.lemon_rect)
+
+  def glow_banana(self):
+    self.bglow = True
+
+  def glow_apple(self):
+    self.aglow = True
+
+  def glow_lemon(self):
+    self.lglow = True
+
+  def unglow(self):
+    self.bglow = False
+    self.aglow = False
+    self.lglow = False
+
+  def glow(self, fruit):
+    if fruit == "banana":
+      self.glow_banana()
+    elif fruit == "lemon":
+      self.glow_lemon()
+    elif fruit == "apple":
+      self.glow_apple()
 
 
 def generateRandomFruit():
-    fruits = ["banana", "apple", "lemon"]
-    index = random.randint(0, 2)
-    fruit_type = fruits[index]
-    fruit = Fruit(fruit_type)
-    return fruit
+  fruits = ["banana", "apple", "lemon"]
+  index = random.randint(0, 2)
+  fruit_type = fruits[index]
+  fruit = Fruit(fruit_type)
+  return fruit
 
 def main():
-    black = 0, 0, 0
+ black = 0, 0, 0
 
-    SCORE = 0
+ SCORE = 0
 
-    clock = pygame.time.Clock()
+ clock = pygame.time.Clock()
 
-    fruit_contours = FruitContours()
+ fruit_contours = FruitContours()
 
-    fruits = {
-      "lemon": [],
-      "apple": [],
-      "banana": []
-    }
+ fruits = []
 
-    pygame.init()
+ pygame.init()
 
-    # A dictionary for which buttons that will generate what fruit
-    fruitdir = {K_UP: "apple", K_LEFT: "lemon", K_RIGHT: "banana"}
+ # A dictionary for which buttons that will generate what fruit
+ fruitdir = {K_UP: "apple", K_LEFT: "lemon", K_RIGHT: "banana"}
 
-    while 1:
-        screen.fill(black)
+ while 1:
+   screen.fill(black)
 
-        delta = clock.tick(30)
+   fruit_contours.unglow();
 
-        for event in pygame.event.get():
-            if event.type == QUIT: return
-            elif event.type == KEYDOWN:
-                button = event.key
-                if button == K_ESCAPE:
-                  print "You win:", SCORE, "points!", "HIGHSCORE!"
-                  return
-                elif button in (K_UP,K_LEFT,K_RIGHT):
-                  for l in (fruits["lemon"], fruits["banana"], fruits["apple"]):
-                    for f in l:
-                      if f.fruit == fruitdir[button] and f.rect.bottom > (height - 150):
-                        SCORE += 1
-                        pygame.display.set_caption("Score: " + str(SCORE))
-                        break
+   delta = clock.tick(30)
 
-        # Move and blit all the fruits on the screen
-        for l in (fruits["lemon"], fruits["banana"], fruits["apple"]):
-          for index, fruit in enumerate(l):
-            if fruit.move(delta):
-              fruit.blit()
-            else:
-              fruits[fruit.fruit].pop(index)
+   for event in pygame.event.get():
+     if event.type == QUIT: return
+     elif event.type == KEYDOWN:
+       button = event.key
+       if button == K_ESCAPE:
+         print "You win:", SCORE, "points!", "HIGHSCORE!"
+         return
+       elif button in (K_UP,K_LEFT,K_RIGHT):
+         for f in fruits:
+           if f.fruit == fruitdir[button] and f.rect.bottom > (height - 150):
+             SCORE += 1
+             fruit_contours.glow(f.fruit)
+             break
+           else:
+            SCORE -= 1
 
-        # Generate random fruits
-        if random.randint(0, 100) > 97:
-            new_fruit = generateRandomFruit()
+   # Move and blit all the fruits on the screen
+   for index, fruit in enumerate(fruits):
+     if fruit.move(delta):
+       fruit.blit()
+     else:
+       fruits.pop(index)
 
-            fruits[new_fruit.fruit].append(new_fruit)
+   # Generate random fruits
+   if random.randint(0, 100) > 97:
+     new_fruit = generateRandomFruit()
 
-        # Draw the fruit contours
-        fruit_contours.blit()
+     fruits.append(new_fruit)
 
-        pygame.display.flip()
+   # Draw the fruit contours
+   fruit_contours.blit()
+
+   pygame.display.flip()
+   pygame.display.set_caption("Score: " + str(SCORE))
 
 if __name__ == '__main__':
   main()
