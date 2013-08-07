@@ -132,10 +132,7 @@ class Background:
 
 def generateRandomFruit():
   fruits = ["banana", "apple", "lemon"]
-  index = random.randint(0, 2)
-  fruit_type = fruits[index]
-  fruit = Fruit(fruit_type)
-  return fruit
+  return Fruit(random.choice(fruits))
 
 def shouldGenerateFruit():
   return random.randint(1,100) > 97
@@ -177,6 +174,8 @@ def main():
               fruit_contours.glow(f.fruit)
               f.hit = True
               break
+            # Lose points if you're cheating
+            SCORE -= 1
 
     # Move and blit all the fruits on the screen
     for index, fruit in enumerate(fruits):
