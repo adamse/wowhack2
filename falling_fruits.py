@@ -122,8 +122,12 @@ class Background:
 
   def fo(self, image):
     im = pygame.image.load(os.path.join(image_dir, image + ".png")).convert()
+    im = python.transform.scale(im, (width, width))
     im.set_colorkey((0,0,0))
     return (im, im.get_rect())
+
+  def move(self):
+    return
 
   def blit(self):
     screenblit(one, onerect)
@@ -131,8 +135,7 @@ class Background:
     screenblit(three, threerect)
 
 def generateRandomFruit():
-  fruits = ["banana", "apple", "lemon"]
-  return Fruit(random.choice(fruits))
+  return Fruit(random.choice(["banana", "apple", "lemon"]))
 
 def shouldGenerateFruit():
   return random.randint(1,100) > 97
