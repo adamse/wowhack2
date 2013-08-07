@@ -61,7 +61,6 @@ class Fruit:
         return (self.rect.y <= height)
 
 class FruitContours:
-
   def __init__(self):
     self.banana, self.banana_glow, self.banana_rect = self.createFruitContour("banana", banana_x)
     self.apple, self.apple_glow, self.apple_rect = self.createFruitContour("apple", apple_x)
@@ -115,6 +114,21 @@ class FruitContours:
     elif fruit == "apple":
       self.glow_apple()
 
+class Background:
+  def __init__(self):
+    self.one, self.onerect = self.fo("space1")
+    self.two, self.tworect = self.fo("space2")
+    self.three, self.threerect = self.fo("space3")
+
+  def fo(self, image):
+    im = pygame.image.load(os.path.join(image_dir, image + ".png")).convert()
+    im.set_colorkey((0,0,0))
+    return (im, im.get_rect())
+
+  def blit(self):
+    screenblit(one, onerect)
+    screenblit(two, tworect)
+    screenblit(three, threerect)
 
 def generateRandomFruit():
   fruits = ["banana", "apple", "lemon"]
@@ -158,7 +172,7 @@ def main():
           return
         elif button in (K_UP,K_LEFT,K_RIGHT):
           for f in fruits:
-            if f.fruit == fruitdir[button] and f.rect.bottom > (height - 150):
+            if f.hit == False and f.fruit == fruitdir[button] and f.rect.bottom > (height - 150):
               SCORE += 1
               fruit_contours.glow(f.fruit)
               f.hit = True
