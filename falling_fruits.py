@@ -158,7 +158,7 @@ def main():
               f.hit = True
               break
             # Lose points if you're cheating
-            SCORE -= 1
+            elif f == fruits[-1]: SCORE -= 1
 
     back.blit()
 
