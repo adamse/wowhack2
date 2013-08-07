@@ -1,8 +1,7 @@
 # vim: set fileencoding=utf8
-import sys, os, pygame, random
+import sys, os, pygame, random, times
 from pygame.locals import *
 from background import Background
-
 
 image_dir = "bilder"
 # The size of the screen
@@ -18,8 +17,13 @@ banana_x = 550
 # Magic glow time
 magic_glow_time = 10
 
+# Default fruit falling speed
+fruit_falling_speed = 0.5
+# Distance for fruit to fall until it's in catch area
+fruit_falling_distance = 700
+
 class Fruit:
-    def __init__(self, fruit, speed=0.5):
+    def __init__(self, fruit, speed=fruit_falling_speed):
         # Load the image
         self.image = pygame.image.load(os.path.join('bilder', fruit + ".png")).convert()
 
@@ -82,7 +86,7 @@ class FruitContours:
 
     rect = image.get_rect()
 
-    rect.midtop = (x, height - 144)
+    rect.midtop = (x, height - 150) # magic number
 
     screen.blit(image, rect)
 
@@ -118,6 +122,7 @@ class FruitContours:
 def generateRandomFruit():
   return Fruit(random.choice(["banana", "apple", "lemon"]))
 
+# This isn't used in the final game
 def shouldGenerateFruit():
   return random.randint(1,100) > 97
 
@@ -130,6 +135,8 @@ def main():
   fruit_contours = FruitContours()
   back = Background(screen, width, height)
   fruits = []
+
+  beat_timer = times.BeatTimer(fruit_falling_speed, fruit_falling_distance)
 
   pygame.init()
 
@@ -171,7 +178,7 @@ def main():
         fruits.pop(index)
 
     # Generate random fruits
-    if shouldGenerateFruit():
+    if beat_timer.get_beat(delta):
       new_fruit = generateRandomFruit()
 
       fruits.append(new_fruit)
